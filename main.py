@@ -16,14 +16,87 @@ db_manager = DatabaseManager()
 # Inicializar banco de dados
 db_manager.initialize_database()
 
+# Configuração para o tema (dark/light mode)
+def set_theme():
+    # Inicializar o state do tema se não existir
+    if 'theme' not in st.session_state:
+        st.session_state.theme = "dark"
+    
+    # Definir cores com base no tema atual
+    if st.session_state.theme == "dark":
+        primary_color = "#4F6D7A"
+        background_color = "#282C34"
+        text_color = "#FFFFFF"
+        secondary_background = "#3E4451"
+    else:  # Light mode
+        primary_color = "#4F6D7A"
+        background_color = "#FFFFFF"
+        text_color = "#1E1E1E"
+        secondary_background = "#F0F2F6"
+    
+    # Aplicar CSS personalizado
+    st.markdown(f"""
+    <style>
+        .stApp {{
+            background-color: {background_color};
+            color: {text_color};
+        }}
+        .stSidebar .sidebar-content {{
+            background-color: {secondary_background};
+        }}
+        h1, h2, h3, h4, h5, h6, p, .stMarkdown {{
+            color: {text_color} !important;
+        }}
+        .stButton>button {{
+            background-color: {primary_color};
+            color: white;
+        }}
+        .stDataFrame {{
+            background-color: {secondary_background};
+        }}
+        .st-emotion-cache-ue6h4q {{
+            color: {text_color};
+        }}
+        .stExpander {{
+            background-color: {secondary_background};
+        }}
+    </style>
+    """, unsafe_allow_html=True)
+
+def toggle_theme():
+    if st.session_state.theme == "light":
+        st.session_state.theme = "dark"
+    else:
+        st.session_state.theme = "light"
+    
+    # Forçar a atualização da página
+    # st.rerun()
+
 def main():
+    
     st.set_page_config(page_title="Agente LangChain - Processador de Arquivos", layout="wide")
+    
+    
+    # Aplicar configurações de tema
+    set_theme()
+    
     
     st.title("Agente LangChain - Processador de Arquivos")
     st.subheader("Armazenamento em PostgreSQL (Neon)")
     
     # Barra lateral com opções
     st.sidebar.title("Navegação")
+    
+    # Toggle de tema na barra lateral
+    with st.sidebar.container():
+        theme_text = "🌙 Modo Escuro" if st.session_state.theme == "light" else "☀️ Modo Claro"
+        if st.button(theme_text, key="theme_toggle"):
+            toggle_theme()
+            st.rerun()
+    
+    # Separador para o menu de navegação
+    st.sidebar.markdown("---")
+    
     page = st.sidebar.radio("Selecione uma opção", [
         "Upload de Arquivos", 
         "Visualizar Documentos", 
@@ -178,7 +251,7 @@ def view_documents_page():
             if st.button("Excluir Documento", key="delete_btn"):
                 if db_manager.delete_document(doc_id):
                     st.success(f"Documento ID {doc_id} excluído com sucesso!")
-                    st.experimental_rerun()  # Recarregar a página
+                    st.rerun()  # Recarregar a página
                 else:
                     st.error("Erro ao excluir documento.")
 
@@ -232,7 +305,8 @@ def query_documents_page():
 def about_page():
     st.header("Sobre o Agente LangChain")
     
-    st.write("""
+    # Mostrar informações sobre a aplicação com estilo adequado ao tema
+    about_content = """
     ### Descrição
     Este é um agente desenvolvido com Python e LangChain para processamento de arquivos e armazenamento em banco de dados PostgreSQL (Neon).
     
@@ -242,6 +316,7 @@ def about_page():
     - Armazenamento de documentos e chunks em banco de dados PostgreSQL
     - Consulta de documentos usando LangChain e modelos de linguagem
     - Visualização e gerenciamento de documentos armazenados
+    - Tema escuro/claro para melhor experiência do usuário
     
     ### Tecnologias Utilizadas
     - **Python**: Linguagem de programação principal
@@ -252,7 +327,9 @@ def about_page():
     
     ### Modo de Desenvolvimento
     Este agente está configurado para funcionar em modo simulado, permitindo o desenvolvimento e teste sem necessidade de credenciais reais de banco de dados ou API.
-    """)
+    """
+    
+    st.markdown(about_content)
 
 if __name__ == "__main__":
     main()
