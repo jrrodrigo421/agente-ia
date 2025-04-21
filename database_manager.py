@@ -321,36 +321,6 @@ class DatabaseManager:
                 conn.close()
             return []
     
-    # def store_query(self, query_text, document_id, result_text):
-    #     """Armazena uma consulta e seu resultado"""
-    #     if self.mock_mode:
-    #         print(f"Simulando armazenamento de consulta: '{query_text}' para documento {document_id}")
-    #         return True
-        
-    #     conn = self.connect()
-    #     if not conn:
-    #         return False
-        
-    #     try:
-    #         cursor = conn.cursor()
-            
-    #         cursor.execute(
-    #             "INSERT INTO queries (query_text, document_id, result_text) VALUES (%s, %s, %s)",
-    #             (query_text, document_id, result_text)
-    #         )
-            
-    #         conn.commit()
-    #         cursor.close()
-    #         conn.close()
-            
-    #         return True
-    #     except Exception as e:
-    #         print(f"Erro ao armazenar consulta: {e}")
-    #         if conn:
-    #             conn.close()
-    #         return False
-    
-    
     def store_query(self, query_text, document_id, result_text):
     # """Armazena uma consulta e seu resultado"""
         if self.mock_mode:
